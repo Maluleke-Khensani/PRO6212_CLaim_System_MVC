@@ -1,0 +1,146 @@
+﻿@model IEnumerable<Claims_System.Models.Lecturers.Lecturer>
+
+@{
+    ViewData["Title"] = "My Claims";
+
+    // Pre-calculate stats
+    var totalClaims = Model.Count();
+    var pendingClaims = Model.Count(c => c.status == "Pending");
+    var approvedClaims = Model.Count(c => c.status == "Approved");
+    var rejectedClaims = Model.Count(c => c.status == "Rejected");
+}
+
+<div class="container mt-4">
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <svg class="me-2" width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <rect x="20" y="16" width="24" height="26" rx="4" fill="#B9375E" />
+                <rect x="26" y="6" width="4" height="8" rx="1" fill="#B9375E" />
+                <rect x="34" y="6" width="4" height="8" rx="1" fill="#B9375E" />
+                <path d="M 18 44 q 14 12 28 0" stroke="#B9375E" stroke-width="3" fill="none" stroke-linecap="round" />
+            </svg>
+            <div>
+                <h2 class="h5 mb-0">Lecturer Dashboard</h2>
+                <small class="text-muted">IIB MSA Contract Monthly Claim System</small>
+            </div>
+        </div>
+        <a class="btn btn-primary" href="/Lecturer/ClaimForm">Create Monthly Claim</a>
+    </div>
+
+    <!-- Stat Summary -->
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Claims</h6>
+                    <h3>@totalClaims</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending</h6>
+                    <h3 class="text-warning">@pendingClaims</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h6 class="text-muted">Approved</h6>
+                    <h3 class="text-success">@approvedClaims</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h6 class="text-muted">Rejected</h6>
+                    <h3 class="text-danger">@rejectedClaims</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="h6">My Submitted Claims</h4>
+        <select id="statusFilter" class="form-select w-auto">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Under Review">Under Review</option>
+        </select>
+    </div>
+
+    <!-- Claims Table -->
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Month</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th class="text-end">Total (ZAR)</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="claimsTable">
+                @foreach (var claim in Model)
+                {
+                    <tr data-status="@claim.status">
+                        <td>@claim.Month</td>
+                        <td>@claim.Submitted</td>
+                        <td>
+                            @if (claim.status == "Pending")
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            else if (claim.status == "Approved")
+                            {
+                                <span class="badge bg-success">Approved</span>
+                            }
+                            else if (claim.status == "Under Review")
+                            {
+                                <span class="badge bg-dark">Under Review</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Rejected</span>
+                            }
+                        </td>
+                        <td class="text-end">R @claim.Amount.ToString("N2")</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" href="/Lecturer/ViewClaim/@claim.EmployeeNumber">View</a>
+
+                            @if (claim.status == "Pending")
+                            {
+                                <a class="btn btn-sm btn-outline-secondary" href="/Lecturer/EditClaim/@claim.EmployeeNumber">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" href="/Lecturer/DeleteClaim/@claim.EmployeeNumber">Delete</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript filter
+<script>
+    document.getElementById("statusFilter").addEventListener("change", function () {
+        var selected = this.value;
+        var rows = document.querySelectorAll("#claimsTable tr");
+        rows.forEach(function (row) {
+            if (selected === "" || row.getAttribute("data-status") === selected) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>
+ -->
