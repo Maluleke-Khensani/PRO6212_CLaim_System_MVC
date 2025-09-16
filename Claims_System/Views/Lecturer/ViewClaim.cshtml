@@ -1,0 +1,121 @@
+﻿@model Claims_System.Models.Lecturers.Lecturer
+
+@{
+    ViewData["Title"] = "View Claim";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0">Claim Details</h2>
+        <a class="btn btn-link" href="/Lecturer">← Back to Dashboard</a>
+    </div>
+
+    <!-- Claim Overview -->
+    <div class="row g-4">
+        <!-- Left: Claim Info -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Lecturer Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Employee ID</dt>
+                        <dd class="col-sm-8">@Model.EmployeeNumber</dd>
+
+                        <dt class="col-sm-4">Lecturer</dt>
+                        <dd class="col-sm-8">@Model.FullName</dd>
+
+                        <dt class="col-sm-4">Department</dt>
+                        <dd class="col-sm-8">@Model.Department</dd>
+
+                        <dt class="col-sm-4">Month</dt>
+                        <dd class="col-sm-8">@Model.Month</dd>
+
+                        <dt class="col-sm-4">Submitted</dt>
+                        <dd class="col-sm-8">@Model.Submitted</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Claim Lines -->
+            <div class="card shadow-sm border-0 rounded-3 mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Claim Summary</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Hours Worked</th>
+                                <th>Rate</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model.hoursWorked</td>
+                                <td>R @Model.Rate</td>
+                                <td class="fw-bold">R @Model.CalculateAmount().ToString("N2")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Supporting Documents -->
+            <div class="card shadow-sm border-0 rounded-3 mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Supporting Documents</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Timesheet.pdf (placeholder)</li>
+                        <li class="list-group-item">ModuleReport.docx (placeholder)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Status + Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Claim Status</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (Model.status == "Pending")
+                    {
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2">Pending</span>
+                    }
+                    else if (Model.status == "Approved")
+                    {
+                        <span class="badge bg-success fs-6 px-3 py-2">Approved</span>
+                    }
+                    else if (Model.status == "Under Review")
+                    {
+                        <span class="badge bg-dark fs-6 px-3 py-2">Under Review</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger fs-6 px-3 py-2">Rejected</span>
+                    }
+
+                    <hr />
+                    <p><strong>Manager Review:</strong> @Model.ManagerStatus</p>
+                    <p><strong>Coordinator Review:</strong> @Model.CoordinatorStatus</p>
+
+                    <div class="d-grid gap-2 mt-3">
+                        @if (Model.status == "Pending")
+                        {
+                            <a class="btn btn-outline-primary" href="/Lecturer/EditClaim/@Model.EmployeeNumber">Edit Claim</a>
+                            <a class="btn btn-outline-danger" href="/Lecturer/DeleteClaim/@Model.EmployeeNumber">Delete Claim</a>
+                        }
+                        <a class="btn btn-secondary" href="/Lecturer">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
