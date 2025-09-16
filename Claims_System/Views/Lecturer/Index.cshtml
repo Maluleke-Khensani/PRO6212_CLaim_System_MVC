@@ -12,20 +12,11 @@
 
 <div class="container mt-4">
     <!-- Dashboard Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center">
-            <svg class="me-2" width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <rect x="20" y="16" width="24" height="26" rx="4" fill="#B9375E" />
-                <rect x="26" y="6" width="4" height="8" rx="1" fill="#B9375E" />
-                <rect x="34" y="6" width="4" height="8" rx="1" fill="#B9375E" />
-                <path d="M 18 44 q 14 12 28 0" stroke="#B9375E" stroke-width="3" fill="none" stroke-linecap="round" />
-            </svg>
-            <div>
-                <h2 class="h5 mb-0">Lecturer Dashboard</h2>
-                <small class="text-muted">IIB MSA Contract Monthly Claim System</small>
-            </div>
-        </div>
-        <a class="btn btn-primary" href="/Lecturer/ClaimForm">Create Monthly Claim</a>
+    <div>
+        @await Html.PartialAsync("Partials/_Logo")
+    </div>
+    </br>
+ <a class="btn btn-primary" href="/Lecturer/ClaimForm">Create Monthly Claim</a>
     </div>
 
     <!-- Stat Summary -->
@@ -118,8 +109,7 @@
 
                             @if (claim.status == "Pending")
                             {
-                                <a class="btn btn-sm btn-outline-secondary" href="/Lecturer/EditClaim/@claim.EmployeeNumber">Edit</a>
-                                <a class="btn btn-sm btn-outline-danger" href="/Lecturer/DeleteClaim/@claim.EmployeeNumber">Delete</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Lecturer/EditClaim/@claim.EmployeeNumber">Edit Claim</a>
                             }
                         </td>
                     </tr>
@@ -129,7 +119,8 @@
     </div>
 </div>
 
-<!-- JavaScript filter
+<!--Assisted by chatgpt-->
+JavaScript filter
 <script>
     document.getElementById("statusFilter").addEventListener("change", function () {
         var selected = this.value;
@@ -143,4 +134,4 @@
         });
     });
 </script>
- -->
+
