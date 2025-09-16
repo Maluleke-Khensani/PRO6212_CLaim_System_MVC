@@ -52,17 +52,21 @@ namespace Claims_System.Controllers
             // Prototype only – no actual deletion yet
             return View(lecturer);
         }
-
-
-        public IActionResult EditClaim(int employeeNumber )
+        
+        [HttpGet("Lecturer/EditClaim/{employeeNumber}")]
+        public IActionResult EditClaim(int employeeNumber)
         {
             var lecturer = _lecturerDatabase.GetLecturerByEmployeeNo(employeeNumber);
+
             if (lecturer == null)
             {
-                return NotFound(); // if not found, return 404
+                return NotFound();
             }
-            return View(lecturer); // pass lecturer object into the View
+
+            return View(lecturer);
         }
+
+
 
     }
 }
