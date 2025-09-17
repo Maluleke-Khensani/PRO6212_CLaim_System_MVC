@@ -6,6 +6,10 @@ A prototype web application built with **ASP.NET Core MVC** for managing **lectu
 
 ---
 
+ #GitHub Repository:
+   
+    https://github.com/Maluleke-Khensani/PRO6212_CLaim_System_MVC.gitgit clone https://github.com/your-username/claims-system.git
+   
 ##  Features  
 
 ###  Lecturer Dashboard  
@@ -80,8 +84,4 @@ The project followed an **Iterative (Agile-inspired) methodology**:
 
 ---
 
- #GitHub Repository:
-   
-    https://github.com/Maluleke-Khensani/PRO6212_CLaim_System_MVC.gitgit clone https://github.com/your-username/claims-system.git
-   
 
