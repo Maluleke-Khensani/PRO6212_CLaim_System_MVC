@@ -83,6 +83,7 @@
                 @foreach (var claim in Model)
                 {
                     <tr data-status="@claim.status">
+                       
                         <td>@claim.Month</td>
                         <td>@claim.Submitted</td>
                         <td>
@@ -120,7 +121,7 @@
 </div>
 
 <!--Assisted by chatgpt-->
-JavaScript filter
+
 <script>
     document.getElementById("statusFilter").addEventListener("change", function () {
         var selected = this.value;
