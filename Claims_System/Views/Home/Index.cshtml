@@ -2,47 +2,51 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="container mt-5">
+<div class="text-center mt-5">
+    @await Html.PartialAsync("Partials/_Logo")
+</div>
 
-    <!-- Logo + Title -->
-    <div class="text-center mb-4">
-         <h1 class="display-5 fw-bold">Claims Management System</h1>
-        <p class="text-muted">Easily manage, verify, and approve lecturer claims.</p>
+<div class="container mt-5 text-center">
+    <h1 class="display-4 fw-bold mb-3">Claims Management System</h1>
+    <p class="lead text-muted mb-5">Easily manage, submit, verify, and approve lecturer claims with speed and accuracy.</p>
+
+    <!-- Features Section -->
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-pencil-square fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title fw-bold">Submit Claims</h5>
+                    <p class="card-text text-muted">Lecturers can easily create and submit claims for approval.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-check2-circle fs-1 text-success mb-3"></i>
+                    <h5 class="card-title fw-bold">Verify & Approve</h5>
+                    <p class="card-text text-muted">Coordinators and managers can review, approve, or reject claims efficiently.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-bar-chart-line fs-1 text-warning mb-3"></i>
+                    <h5 class="card-title fw-bold">Track Progress</h5>
+                    <p class="card-text text-muted">Monitor claim status in real-time with clear dashboards and notifications.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Navigation Cards -->
-    <div class="row justify-content-center">
-        <!-- Lecturer -->
-        <div class="col-md-3">
-            <div class="card shadow-sm text-center p-3">
-                <div class="card-body">
-                    <h5 class="card-title">Lecturer</h5>
-                    <p class="card-text text-muted">Submit and track your claims.</p>
-                    <a asp-controller="Lecturer" asp-action="Index" class="btn btn-primary">Go</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Coordinator -->
-        <div class="col-md-3">
-            <div class="card shadow-sm text-center p-3">
-                <div class="card-body">
-                    <h5 class="card-title">Coordinator</h5>
-                    <p class="card-text text-muted">Review and verify submitted claims.</p>
-                    <a asp-controller="Coordinator" asp-action="Index" class="btn btn-success">Go</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Manager -->
-        <div class="col-md-3">
-            <div class="card shadow-sm text-center p-3">
-                <div class="card-body">
-                    <h5 class="card-title">Manager</h5>
-                    <p class="card-text text-muted">Approve or reject verified claims.</p>
-                    <a asp-controller="AcademicManager" asp-action="Index" class="btn btn-danger">Go</a>
-                </div>
-            </div>
-        </div>
+    <!-- Optional Call to Action -->
+    <div class="mt-5">
+        <h5 class="fw-bold mb-3">Get Started Today</h5>
+        <p class="text-muted mb-3">Log in to submit your claims or manage approvals seamlessly.</p>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-lg">
+            Login Now
+        </a>
     </div>
 </div>
