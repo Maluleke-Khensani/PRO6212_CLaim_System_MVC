@@ -14,6 +14,16 @@ builder.Services.AddDbContext<ClaimsDbContext>(options =>
 // Dependency Injection for LecturerService
 builder.Services.AddScoped<IClaimService, ClaimService>();
 
+builder.Services.AddDistributedMemoryCache(); // required for session storage
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // session timeout
+    options.Cookie.HttpOnly = true; // security
+    options.Cookie.IsEssential = true; // required for GDPR compliance
+});
+
+
 
 var app = builder.Build();
 
@@ -27,6 +37,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles(); // ensure static files are served
 app.UseRouting();
+
+app.UseSession(); // <-- ADD THIS LINE HERE BEFORE app.UseAuthorization()
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -4,6 +4,7 @@ using Claims_System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Claims_System.Migrations
 {
     [DbContext(typeof(ClaimsDbContext))]
-    partial class ClaimsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251020184911_MakeUsernameANullable")]
+    partial class MakeUsernameANullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,9 +100,6 @@ namespace Claims_System.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<int>("EmployeeNumber")
-                        .HasColumnType("int");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -116,30 +116,14 @@ namespace Claims_System.Migrations
                         new
                         {
                             UserId = 1,
-                            EmployeeNumber = 1001,
                             PasswordHash = "pass123",
                             Username = "lecturer1"
                         },
                         new
                         {
                             UserId = 2,
-                            EmployeeNumber = 2001,
                             PasswordHash = "admin123",
                             Username = "coordinator1"
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            EmployeeNumber = 1002,
-                            PasswordHash = "pass456",
-                            Username = "lecturer2"
-                        },
-                        new
-                        {
-                            UserId = 4,
-                            EmployeeNumber = 3001,
-                            PasswordHash = "manager123",
-                            Username = "manager1"
                         });
                 });
 #pragma warning restore 612, 618
