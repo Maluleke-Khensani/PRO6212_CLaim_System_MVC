@@ -10,9 +10,9 @@ namespace Claims_System.Services
         Task<LecturerClaim?> GetClaimByIdAsync(int id);
         Task<bool> CreateClaimAsync(LecturerClaim model, IFormFile? document1, IFormFile? document2);
         Task<bool> DeleteClaimAsync(int id);
+        Task<bool> UpdateClaimAsync(LecturerClaim model);
 
-        FileResult? DownloadDocument1(int claimId);
-        FileResult? DownloadDocument2(int claimId);
+
 
         // Coordinator
         Task<IEnumerable<LecturerClaim>> GetPendingClaimsForCoordinatorAsync();
@@ -21,7 +21,11 @@ namespace Claims_System.Services
         // Manager
         Task<IEnumerable<LecturerClaim>> GetPendingClaimsForManagerAsync();
         Task<bool> UpdateManagerStatusAsync(int claimId, string status);
-        Task<LecturerClaim?> GetClaimByEmployeeNumberAsync(int employeeNumber); 
+        Task<LecturerClaim?> GetClaimByEmployeeNumberAsync(int employeeNumber);
+
+        byte[] DecryptFileForPreview(byte[] encryptedBytes);
+        FileResult? DownloadDocument1(int claimId);
+        FileResult? DownloadDocument2(int claimId);
 
 
     }

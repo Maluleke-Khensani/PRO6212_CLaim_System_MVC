@@ -23,8 +23,10 @@ namespace Claims_System.Services
 
         public async Task<LecturerClaim?> GetClaimByIdAsync(int id)
         {
-            return await _context.LecturerClaims.FirstOrDefaultAsync(c => c.ClaimId == id);
+            return await _context.LecturerClaims
+                .FirstOrDefaultAsync(c => c.ClaimId == id);
         }
+
 
         public async Task<bool> CreateClaimAsync(LecturerClaim model, IFormFile? document1, IFormFile? document2)
         {
@@ -58,6 +60,26 @@ namespace Claims_System.Services
             if (claim == null) return false;
 
             _context.LecturerClaims.Remove(claim);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> UpdateClaimAsync(LecturerClaim model)
+        {
+            var existingClaim = await _context.LecturerClaims
+                .FirstOrDefaultAsync(c => c.ClaimId == model.ClaimId);
+
+            if (existingClaim == null) return false;
+
+            // Update fields
+            existingClaim.ModuleName = model.ModuleName;
+            existingClaim.HoursWorked = model.HoursWorked;
+            existingClaim.Rate = model.Rate;
+            existingClaim.Notes = model.Notes;
+
+            // Optionally handle documents if you want to allow replacing them
+            await ProcessDocumentAsync(existingClaim, null, true);
+            await ProcessDocumentAsync(existingClaim, null, false);
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -112,6 +134,11 @@ namespace Claims_System.Services
             aes.IV = new byte[16];
             using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
             return decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+        }
+
+        public byte[] DecryptFileForPreview(byte[] encryptedBytes)
+        {
+            return DecryptFile(encryptedBytes, AesKey);
         }
 
 
