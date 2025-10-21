@@ -10,26 +10,28 @@ namespace Claims_System_Tests.Models
 {
     public class ClaimServiceTest
     {
-        // ✅ Use in-memory SQLite for realistic database behavior
+        // ✅ Helper method to create an in-memory SQLite DB
+        // This simulates a real database without touching the actual DB
         private ClaimsDbContext GetDbContext()
         {
             var options = new DbContextOptionsBuilder<ClaimsDbContext>()
-                .UseSqlite("Filename=:memory:") // SQLite in-memory DB
+                .UseSqlite("Filename=:memory:") // in-memory SQLite
                 .Options;
 
             var context = new ClaimsDbContext(options);
-            context.Database.OpenConnection();  // important for SQLite memory
-            context.Database.EnsureCreated();
+            context.Database.OpenConnection();  // must open connection for SQLite memory
+            context.Database.EnsureCreated();   // make sure the table is created
             return context;
         }
 
         [Fact]
         public async Task CreateClaimAsync_Should_Add_Claim()
         {
-            // Arrange
+            // Arrange: set up context and service
             var context = GetDbContext();
             var service = new ClaimService(context);
 
+            // Arrange: create a sample claim to add
             var claim = new LecturerClaim
             {
                 EmployeeNumber = 1001,
@@ -46,21 +48,22 @@ namespace Claims_System_Tests.Models
                 Notes = "Test note"
             };
 
-            // Act
+            // Act: try to add the claim via the service
             var result = await service.CreateClaimAsync(claim, null, null);
 
-            // Assert
-            Assert.True(result);
-            Assert.Equal(1, context.LecturerClaims.Count());
+            // Assert: check that the claim was added successfully
+            Assert.True(result); // service returned success
+            Assert.Equal(1, context.LecturerClaims.Count()); // DB now has one claim
         }
 
         [Fact]
         public async Task DeleteClaimAsync_Should_Remove_Claim()
         {
-            // Arrange
+            // Arrange: set up context and service
             var context = GetDbContext();
             var service = new ClaimService(context);
 
+            // Arrange: add a claim to delete
             var claim = new LecturerClaim
             {
                 EmployeeNumber = 2001,
@@ -78,23 +81,24 @@ namespace Claims_System_Tests.Models
             };
 
             context.LecturerClaims.Add(claim);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(); // save to in-memory DB
 
-            // Act
+            // Act: delete the claim via the service
             var result = await service.DeleteClaimAsync(claim.ClaimId);
 
-            // Assert
-            Assert.True(result);
-            Assert.Empty(context.LecturerClaims);
+            // Assert: claim was removed
+            Assert.True(result); // service returned success
+            Assert.Empty(context.LecturerClaims); // DB has no claims left
         }
 
         [Fact]
         public async Task GetAllClaimsAsync_Should_Return_Claims()
         {
-            // Arrange
+            // Arrange: set up context and service
             var context = GetDbContext();
             var service = new ClaimService(context);
 
+            // Arrange: add a claim to test retrieval
             context.LecturerClaims.Add(new LecturerClaim
             {
                 EmployeeNumber = 3001,
@@ -113,12 +117,12 @@ namespace Claims_System_Tests.Models
 
             await context.SaveChangesAsync();
 
-            // Act
+            // Act: retrieve all claims via service
             var claims = await service.GetAllClaimsAsync();
 
-            // Assert
-            Assert.NotNull(claims);
-            Assert.Single(claims);
+            // Assert: check that we got the claim
+            Assert.NotNull(claims); // should not be null
+            Assert.Single(claims);   // should have exactly one claim
         }
     }
 }

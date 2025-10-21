@@ -14,14 +14,14 @@ namespace Claims_System.Controllers
             _context = context;
         }
 
-        // GET: /Account/Login
+        
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
+       
         [HttpPost]
         public IActionResult Login(LoginView model)
         {
@@ -51,8 +51,6 @@ namespace Claims_System.Controllers
             };
         }
 
-
-        // Logout
         // Logout
         public IActionResult Logout()
         {

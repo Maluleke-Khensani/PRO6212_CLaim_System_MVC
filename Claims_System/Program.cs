@@ -19,9 +19,9 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // session timeout
-    options.Cookie.HttpOnly = true; // security
-    options.Cookie.IsEssential = true; // GDPR compliance
+    options.IdleTimeout = TimeSpan.FromMinutes(30); 
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; 
 });
 
 var app = builder.Build();
@@ -34,10 +34,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // serve static files
+app.UseStaticFiles(); 
 app.UseRouting();
 
-app.UseSession(); // required for session storage
+app.UseSession(); 
 app.UseAuthorization();
 
 app.MapControllerRoute(

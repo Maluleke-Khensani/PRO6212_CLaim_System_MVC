@@ -3,6 +3,7 @@ using Claims_System.Services;
 
 public class CoordinatorController : Controller
 {
+    //Assitsed by ChatGPT to implement CoordinatorController and modify other parts of the system
     private readonly IClaimService _service;
 
     public CoordinatorController(IClaimService service)

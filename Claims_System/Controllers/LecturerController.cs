@@ -8,7 +8,7 @@ namespace Claims_System.Controllers
     public class LecturerController : Controller
     {
         private readonly IClaimService _claimService;
-        private readonly ClaimsDbContext _context; // add this
+        private readonly ClaimsDbContext _context; 
 
 
         public LecturerController(IClaimService lecturerService, ClaimsDbContext context)
@@ -18,7 +18,6 @@ namespace Claims_System.Controllers
         }
 
 
-        // ------------------- Dashboard -------------------
         public async Task<IActionResult> Index()
         {
             var username = HttpContext.Session.GetString("Username");
@@ -37,7 +36,7 @@ namespace Claims_System.Controllers
             return View(userClaims);
         }
 
-        // ------------------- Create Claim -------------------
+        
         public IActionResult ClaimForm()
         {
             var username = HttpContext.Session.GetString("Username");
@@ -101,7 +100,6 @@ namespace Claims_System.Controllers
         }
 
 
-        // ------------------- View Claim -------------------
         public async Task<IActionResult> ViewClaim(int id)
         {
             var claim = await _claimService.GetClaimByIdAsync(id);
@@ -111,7 +109,6 @@ namespace Claims_System.Controllers
             return View(claim);
         }
 
-        // ------------------- Edit Claim -------------------
         public async Task<IActionResult> Edit(int id)
         {
             var username = HttpContext.Session.GetString("Username");
@@ -158,7 +155,7 @@ namespace Claims_System.Controllers
             return RedirectToAction("Index");
         }
 
-        // ------------------- Delete Claim -------------------
+   
         public async Task<IActionResult> Delete(int id)
         {
             var username = HttpContext.Session.GetString("Username");
@@ -209,7 +206,7 @@ namespace Claims_System.Controllers
         }
 
 
-        // ------------------- Download Documents -------------------
+
         public IActionResult DownloadDocument1(int id)
         {
             try

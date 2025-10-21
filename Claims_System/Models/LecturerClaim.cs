@@ -16,11 +16,11 @@ namespace Claims_System.Models
         public string Username { get; set; }
 
         [Required]
-        [Column(TypeName = "TEXT")] // SQLite-friendly
+        [Column(TypeName = "TEXT")] 
         public string FullName { get; set; }
 
         [Required]
-        [Column(TypeName = "TEXT")] // SQLite-friendly
+        [Column(TypeName = "TEXT")] 
         public string ModuleName { get; set; }
 
         [Required]
@@ -32,19 +32,19 @@ namespace Claims_System.Models
 
         [Required]
         [DataType(DataType.Date)]
-        [Column(TypeName = "TEXT")] // SQLite stores DateTime as TEXT
+        [Column(TypeName = "TEXT")] 
         public DateTime Submitted { get; set; }
 
         [Required]
         [Range(0, 999)]
-        [Column(TypeName = "REAL")] // decimal → REAL
+        [Column(TypeName = "REAL")] 
         public decimal HoursWorked { get; set; }
 
         [Required]
-        [Column(TypeName = "REAL")] // decimal → REAL
+        [Column(TypeName = "REAL")] 
         public decimal Rate { get; set; } = 500;
 
-        // Computed property, not mapped to DB
+        
         [NotMapped]
         public decimal Total => HoursWorked * Rate;
 

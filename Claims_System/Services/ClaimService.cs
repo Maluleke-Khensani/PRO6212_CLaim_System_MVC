@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_System.Services
 {
+    //Assited by ChatGPT to implement file encryption and decryption and process the documents
     public class ClaimService : IClaimService
     {
         private readonly ClaimsDbContext _context;
-        private const string AesKey = "1234567890ABCDEF"; // 16 chars for AES-128
+        private const string AesKey = "1234567890ABCDEF"; 
 
         public ClaimService(ClaimsDbContext context)
         {
@@ -76,7 +77,7 @@ namespace Claims_System.Services
             existingClaim.Rate = model.Rate;
             existingClaim.Notes = model.Notes;
 
-            // Optionally handle documents if you want to allow replacing them
+            
             await ProcessDocumentAsync(existingClaim, null, true);
             await ProcessDocumentAsync(existingClaim, null, false);
 

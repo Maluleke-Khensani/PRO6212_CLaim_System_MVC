@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Claims_System.Models
 {
+
+    //Assisted by ChatGPT to convert to SQLite
     public class ClaimsDbContext : DbContext
     {
         public ClaimsDbContext(DbContextOptions<ClaimsDbContext> options) : base(options) { }
@@ -23,11 +25,11 @@ namespace Claims_System.Models
                     entity.Property(e => e.Document2FileName).HasColumnType("TEXT");
                     entity.Property(e => e.Document2FileData).HasColumnType("BLOB");
 
-                    // Optional: map string/decimal/DateTime explicitly for SQLite
+                    
                     entity.Property(e => e.FullName).HasColumnType("TEXT");
                     entity.Property(e => e.ModuleName).HasColumnType("TEXT");
                     entity.Property(e => e.Notes).HasColumnType("TEXT");
-                    entity.Property(e => e.Submitted).HasColumnType("TEXT"); // SQLite stores DateTime as TEXT
+                    entity.Property(e => e.Submitted).HasColumnType("TEXT"); 
                     entity.Property(e => e.HoursWorked).HasColumnType("REAL");
                     entity.Property(e => e.Rate).HasColumnType("REAL");
                 });
