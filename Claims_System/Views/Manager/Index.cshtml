@@ -1,8 +1,9 @@
 ﻿@model IEnumerable<Claims_System.Models.LecturerClaim>
 
 @{
-    ViewData["Title"] = "Coordinator Dashboard";
+    ViewData["Title"] = "Academic Manager Dashboard";
 }
+
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -16,7 +17,6 @@
         </div>
     </div>
 
-    
 
 
     <!-- Tabs Navigation -->
@@ -33,7 +33,6 @@
     </ul>
 
     <div class="tab-content mt-3" id="claimTabsContent">
-
         <!-- Pending Claims -->
         <div class="tab-pane fade show active" id="pending" role="tabpanel">
             <h5 class="mb-3">Pending Claims</h5>
@@ -51,36 +50,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var claim in Model.Where(c => c.CoordinatorStatus == "Pending"))
+                    @foreach (var claim in Model.Where(c => c.ManagerStatus == "Pending"))
                     {
                         <tr>
                             <td>@claim.EmployeeNumber</td>
                             <td>@claim.FullName</td>
                             <td>@claim.Month</td>
                             <td>@claim.ModuleName</td>
+                            <td>@claim.CoordinatorStatus</td>
                             <td>
-                                <span class="badge bg-warning text-dark">@claim.CoordinatorStatus</span>
-                            </td>
-                            <td>
-                                @if (claim.ManagerStatus == "Pending")
-                                {
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                }
-                                else if (claim.ManagerStatus == "Approved")
-                                {
-                                    <span class="badge bg-success">Approved</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Rejected</span>
-                                }
+                                <span class="badge bg-warning text-dark">Pending</span>
                             </td>
                             <td>@claim.Submitted</td>
                             <td>
-                                <a asp-controller="Coordinator"
+                                <a asp-controller="Manager"
                                    asp-action="ReviewClaim"
-                                   asp-route-claimId="@claim.ClaimId"
-                                   class="btn btn-primary btn-sm">
+                                   asp-route-claimId="@claim.ClaimId" 
+                                   class="btn-btn-primary">
                                     Review
                                 </a>
                             </td>
@@ -106,30 +92,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var claim in Model.Where(c => c.CoordinatorStatus == "Approved"))
+                    @foreach (var claim in Model.Where(c => c.ManagerStatus == "Approved"))
                     {
                         <tr>
                             <td>@claim.EmployeeNumber</td>
                             <td>@claim.FullName</td>
                             <td>@claim.Month</td>
                             <td>@claim.ModuleName</td>
-                            <td>
-                                <span class="badge bg-success">@claim.CoordinatorStatus</span>
-                            </td>
-                            <td>
-                                @if (claim.ManagerStatus == "Pending")
-                                {
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                }
-                                else if (claim.ManagerStatus == "Approved")
-                                {
-                                    <span class="badge bg-success">Approved</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Rejected</span>
-                                }
-                            </td>
+                            <td>@claim.CoordinatorStatus</td>
+                            <td><span class="badge bg-success">Approved</span></td>
                             <td>@claim.Submitted</td>
                         </tr>
                     }
@@ -153,36 +124,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var claim in Model.Where(c => c.CoordinatorStatus == "Rejected"))
+                    @foreach (var claim in Model.Where(c => c.ManagerStatus == "Rejected"))
                     {
                         <tr>
                             <td>@claim.EmployeeNumber</td>
                             <td>@claim.FullName</td>
                             <td>@claim.Month</td>
                             <td>@claim.ModuleName</td>
-                            <td>
-                                <span class="badge bg-danger">@claim.CoordinatorStatus</span>
-                            </td>
-                            <td>
-                                @if (claim.ManagerStatus == "Pending")
-                                {
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                }
-                                else if (claim.ManagerStatus == "Approved")
-                                {
-                                    <span class="badge bg-success">Approved</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Rejected</span>
-                                }
-                            </td>
+                            <td>@claim.CoordinatorStatus</td>
+                            <td><span class="badge bg-danger">Rejected</span></td>
                             <td>@claim.Submitted</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>

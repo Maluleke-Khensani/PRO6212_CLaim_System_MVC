@@ -1,23 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Claims_System.Services;
 
-public class CoordinatorController : Controller
+public class ManagerController : Controller
 {
     private readonly IClaimService _service;
 
-    public CoordinatorController(IClaimService service)
+    public ManagerController(IClaimService service)
     {
         _service = service;
     }
 
-    // Dashboard - shows all pending claims for coordinator
+    // Dashboard
     public async Task<IActionResult> Index()
     {
         var claims = await _service.GetAllClaimsAsync();
         return View(claims);
     }
 
-    // Review Page
+    // Opens Review Page
     [HttpGet]
     public async Task<IActionResult> ReviewClaim(int claimId)
     {
@@ -27,26 +27,26 @@ public class CoordinatorController : Controller
         return View("ReviewClaim", claim);
     }
 
-    // Approve Claim
+    // CONFIRMS Approval
     [HttpPost]
     public async Task<IActionResult> ApproveClaim(int claimId)
     {
         var claim = await _service.GetClaimByIdAsync(claimId);
         if (claim == null) return NotFound();
 
-        await _service.UpdateCoordinatorStatusAsync(claim.EmployeeNumber, "Approved");
+        await _service.UpdateManagerStatusAsync(claim.EmployeeNumber, "Approved");
         TempData["Message"] = "Claim approved successfully.";
         return RedirectToAction(nameof(Index));
     }
 
-    // Reject Claim
+    // CONFIRMS Rejection
     [HttpPost]
     public async Task<IActionResult> RejectClaim(int claimId)
     {
         var claim = await _service.GetClaimByIdAsync(claimId);
         if (claim == null) return NotFound();
 
-        await _service.UpdateCoordinatorStatusAsync(claim.EmployeeNumber, "Rejected");
+        await _service.UpdateManagerStatusAsync(claim.EmployeeNumber, "Rejected");
         TempData["Message"] = "Claim rejected successfully.";
         return RedirectToAction(nameof(Index));
     }

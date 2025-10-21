@@ -1,54 +1,78 @@
-﻿@model IEnumerable<Claims_System.Models.Lecturers.Lecturer>
+﻿@model IEnumerable<Claims_System.Models.LecturerClaim>
 
 @{
     ViewData["Title"] = "My Claims";
-
-    // Pre-calculate stats
     var totalClaims = Model.Count();
-    var pendingClaims = Model.Count(c => c.status == "Pending");
-    var approvedClaims = Model.Count(c => c.status == "Approved");
-    var rejectedClaims = Model.Count(c => c.status == "Rejected");
+    var pendingClaims = Model.Count(c => c.CoordinatorStatus == "Pending" || c.ManagerStatus == "Pending");
+    var approvedClaims = Model.Count(c => c.ManagerStatus == "Approved");
+    var rejectedClaims = Model.Count(c => c.ManagerStatus == "Rejected");
 }
 
 <div class="container mt-4">
+
     <!-- Dashboard Header -->
-    <div>
-        @await Html.PartialAsync("Partials/_Logo")
-    </div>
-    </br>
- <a class="btn btn-primary" href="/Lecturer/ClaimForm">Create Monthly Claim</a>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            @await Html.PartialAsync("Partials/_Logo")
+        </div>
+        <h2 class="h4">@ViewData["Title"]</h2>
+        <div class="d-flex align-items-center">
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger ms-3">
+                Logout
+            </a>
+        </div>
     </div>
 
-    <!-- Stat Summary -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+
+
+    <a class="btn btn-primary mb-4" href="/Lecturer/ClaimForm">Create Monthly Claim</a>
+
+    <!-- Dashboard Cards -->
     <div class="row text-center mb-4">
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-muted">Total Claims</h6>
+                    <h6>Total Claims</h6>
                     <h3>@totalClaims</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-muted">Pending</h6>
+                    <h6>Pending</h6>
                     <h3 class="text-warning">@pendingClaims</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-muted">Approved</h6>
+                    <h6>Approved</h6>
                     <h3 class="text-success">@approvedClaims</h3>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-muted">Rejected</h6>
+                    <h6>Rejected</h6>
                     <h3 class="text-danger">@rejectedClaims</h3>
                 </div>
             </div>
@@ -69,50 +93,60 @@
 
     <!-- Claims Table -->
     <div class="table-responsive shadow-sm rounded">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover table-striped align-middle mb-0" id="claimsTable">
             <thead class="table-light">
                 <tr>
                     <th>Month</th>
                     <th>Submitted</th>
-                    <th>Status</th>
+                    <th>Coordinator Status</th>
+                    <th>Manager Status</th>
                     <th class="text-end">Total (ZAR)</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
-            <tbody id="claimsTable">
+            <tbody>
                 @foreach (var claim in Model)
                 {
-                    <tr data-status="@claim.status">
-                       
-                        <td>@claim.Month</td>
-                        <td>@claim.Submitted</td>
+                    <tr data-status="@claim.ManagerStatus">
+                        <td>@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(claim.Month) @claim.Year</td>
+                        <td>@claim.Submitted.ToShortDateString()</td>
                         <td>
-                            @if (claim.status == "Pending")
-                            {
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            }
-                            else if (claim.status == "Approved")
-                            {
-                                <span class="badge bg-success">Approved</span>
-                            }
-                            else if (claim.status == "Under Review")
-                            {
-                                <span class="badge bg-dark">Under Review</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Rejected</span>
-                            }
+                            <span class="badge @(claim.CoordinatorStatus == "Approved" ? "bg-success" : claim.CoordinatorStatus == "Rejected" ? "bg-danger" : "bg-secondary text-dark")">
+                                @claim.CoordinatorStatus
+                            </span>
                         </td>
-                        <td class="text-end">R @claim.Amount.ToString("N2")</td>
+                        <td>
+                            <span class="badge @(claim.ManagerStatus == "Approved" ? "bg-success" : claim.ManagerStatus == "Rejected" ? "bg-danger" : "bg-secondary text-dark")">
+                                @claim.ManagerStatus
+                            </span>
+                        </td>
+                        <td class="text-end">R @(claim.Total.ToString("N2"))</td>
                         <td class="text-end">
-                            <a class="btn btn-sm btn-outline-secondary" href="/Lecturer/ViewClaim/@claim.EmployeeNumber">View</a>
-
-                            @if (claim.status == "Pending")
-                            {
-                                <a class="btn btn-sm btn-outline-secondary" href="/Lecturer/EditClaim/@claim.EmployeeNumber">Edit Claim</a>
-                            }
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-action="ViewClaim" asp-route-id="@claim.ClaimId">View Claim</a></li>
+                                    @if (!string.IsNullOrEmpty(claim.Document1FileName))
+                                    {
+                                        <li><a class="dropdown-item" asp-action="DownloadDocument1" asp-route-id="@claim.ClaimId">Doc1</a></li>
+                                    }
+                                    @if (!string.IsNullOrEmpty(claim.Document2FileName))
+                                    {
+                                        <li><a class="dropdown-item" asp-action="DownloadDocument2" asp-route-id="@claim.ClaimId">Doc2</a></li>
+                                    }
+                                    @* Only show Edit/Delete if claim is editable *@
+                                    @if (claim.CoordinatorStatus == "Pending" && claim.ManagerStatus == "Pending")
+                                    {
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@claim.ClaimId">Edit Claim</a></li>
+                                        <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@claim.ClaimId">Delete claim</a></li>
+                                    }
+                                </ul>
+                            </div>
                         </td>
+
                     </tr>
                 }
             </tbody>
@@ -120,19 +154,18 @@
     </div>
 </div>
 
-<!--Assisted by chatgpt-->
-
-<script>
-    document.getElementById("statusFilter").addEventListener("change", function () {
-        var selected = this.value;
-        var rows = document.querySelectorAll("#claimsTable tr");
-        rows.forEach(function (row) {
-            if (selected === "" || row.getAttribute("data-status") === selected) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
+@section Scripts {
+    <script>
+        document.getElementById("statusFilter").addEventListener("change", function () {
+            var selected = this.value;
+            var rows = document.querySelectorAll("#claimsTable tbody tr");
+            rows.forEach(function (row) {
+                if (selected === "" || row.getAttribute("data-status") === selected) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
         });
-    });
-</script>
-
+    </script>
+}

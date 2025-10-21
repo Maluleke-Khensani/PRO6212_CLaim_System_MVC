@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Claims_System.Models
 {
@@ -7,13 +8,14 @@ namespace Claims_System.Models
         [Key]
         public int UserId { get; set; }
 
-        [Required]  
+        [Required]
+        [Column(TypeName = "TEXT")] // SQLite-friendly
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
+        [Column(TypeName = "TEXT")] // SQLite-friendly
         public string PasswordHash { get; set; } // store hashed password
 
-   
         public int EmployeeNumber { get; set; }
     }
-} 
+}

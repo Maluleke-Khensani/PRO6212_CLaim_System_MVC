@@ -7,23 +7,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// EF Core SQL Server
+// Configure EF Core to use SQLite instead of SQL Server
 builder.Services.AddDbContext<ClaimsDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite("Data Source=ClaimsDB.db"));
 
-// Dependency Injection for LecturerService
+// Dependency Injection for ClaimService
 builder.Services.AddScoped<IClaimService, ClaimService>();
 
-builder.Services.AddDistributedMemoryCache(); // required for session storage
+// Configure session storage
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // session timeout
     options.Cookie.HttpOnly = true; // security
-    options.Cookie.IsEssential = true; // required for GDPR compliance
+    options.Cookie.IsEssential = true; // GDPR compliance
 });
-
-
 
 var app = builder.Build();
 
@@ -35,11 +34,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // ensure static files are served
+app.UseStaticFiles(); // serve static files
 app.UseRouting();
 
-app.UseSession(); // <-- ADD THIS LINE HERE BEFORE app.UseAuthorization()
-
+app.UseSession(); // required for session storage
 app.UseAuthorization();
 
 app.MapControllerRoute(
