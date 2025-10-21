@@ -1,87 +1,99 @@
+# Claims Management System
 
+A **web application** built with **ASP.NET Core MVC** for managing **lecturer claims**. The system provides **role-based dashboards** for Lecturers, Coordinators, and Academic Managers, allowing claims to be submitted, reviewed, and approved in a structured workflow.
 
-#  Claims Management System  
-
-A prototype web application built with **ASP.NET Core MVC** for managing **lecturer claims**. The system provides different dashboards for **Lecturers, Coordinators, and Academic Managers**, allowing claims to be submitted, reviewed, and approved in a structured workflow.  
-
----
-
- #GitHub Repository:
-   
-    https://github.com/Maluleke-Khensani/PRO6212_CLaim_System_MVC.gitgit clone https://github.com/your-username/claims-system.git
-   
-##  Features  
-
-###  Lecturer Dashboard  
-- Submit new monthly claims.  
-- View claim history with status updates.  
-- Edit claims before final submission, cannot be edited once reviewed.  
-
-###  Coordinator Dashboard  
-- Review claims submitted by lecturers.  
-- Verify claims and update claim statuses.  
-- Filter claims by **Pending, Approved, or Rejected** using a tabbed view.  
-
-###  Academic Manager Dashboard  
-- View claims verified by coordinators.  
-- Make the **final approval or rejection**.  
-- Approved/rejected claims are locked and cannot be modified further.
-- Edit claims before final submission, cannot be edited once reviewed.
-   Filter claims by **Pending, Approved, or Rejected** using a tabbed view.  
-
- 
-###  Home Page  
-- Serves as the **navigation hub**.  
-- Provides quick access to Lecturer, Coordinator, and Manager dashboards.  
-- Clean and professional UI with role-based cards.  
+The application now includes **SQL database integration SQLite database, file uploads with encryption**, session-based login, and a **unit tests** to ensure reliability.
 
 ---
 
-##  Technology Stack  
+## GitHub Repository
 
-- **Framework:** ASP.NET Core MVC (C#)  
-- **Frontend:** Razor Views, Bootstrap 5  
-- **Data Storage:** In-memory Lists (prototype), can be extended to SQL Database in later phases  
-- **Version Control:** Git + GitHub  
+[https://github.com/Maluleke-Khensani/PRO6212_CLaim_System_MVC](https://github.com/Maluleke-Khensani/PRO6212_CLaim_System_MVC.git)
 
----
-## 📅 Project Plan  
-
-The project was developed in **phases**:  
-
-1. **Phase 1 (Prototype)**  
-   - Implement basic lecturer functionality (create, view, edit claims).  
-   - Coordinator and Manager dashboards with placeholder review/approval.  
-   - Static storage (Lists) to simulate claim submissions.  
-
-2. **Phase 2 (Enhancement)**  
-   - Introduce full database (SQL Server).  
-   - User authentication (role-based access: Lecturer, Coordinator, Manager).  
-   - Attach/upload supporting claim documents.  
-
-3. **Phase 3 (Final)**  
-   - Add reporting features (monthly claim reports, lecturer claim summaries).  
-   - Email notifications on claim approvals/rejections.  
-   - Deployment to cloud (Azure or AWS).  
+```bash
+git clone https://github.com/Maluleke-Khensani/PRO6212_CLaim_System_MVC.git
+```
 
 ---
 
-## ⚡ Methodology  
+## Features
 
-The project followed an **Iterative (Agile-inspired) methodology**:  
-- Start with a **working prototype** (Phase 1).  
-- Expand functionality incrementally (Phase 2 & 3).  
-- Frequent reviews and adjustments based on feedback .  
+### Lecturer Dashboard
+
+* Submit new monthly claims.
+* Attach up to **two supporting documents** (.pdf, .docx, .xlsx, max 5MB) securely with AES encryption.
+* View claim history with status updates (Coordinator & Manager).
+* Edit claims while **status is Pending**, cannot edit once approved/rejected.
+
+### Coordinator Dashboard
+
+* Review claims submitted by lecturers.
+* Verify or reject claims.
+* Filter claims by **Pending, Approved, or Rejected**.
+* Download supporting documents (automatically decrypted).
+
+### Academic Manager Dashboard
+
+* View claims verified by coordinators.
+* Make **final approval or rejection**.
+* Approved/rejected claims are locked and cannot be modified.
+* Filter claims by **Pending, Approved, or Rejected**.
+
+### Home Page
+
+* Serves as a **navigation hub**.
+* Clean, neutral, and professional UI with role-based cards.
+* Quick access to Lecturer, Coordinator, and Manager dashboards.
+
+### Login Page
+
+* Session-based login for Lecturers, Coordinators, and Managers.
+* Credentials validated against the **Users table** in SQL database (`ClaimsDB.db`).
+* Redirects to dashboard on success, displays friendly error on failure or expired session.
+
+### Unit Testing
+
+* Uses **xUnit + Moq** with an **in-memory SQLite database**.
+* Tests include:
+
+  1. Creating a claim (ensures encrypted documents are saved).
+  2. Deleting a claim (ensures removal from DB).
+  3. Retrieving claims (ensures correct claims returned).
+  4. Controller tests (Index, ClaimForm, ViewClaim) for proper filtering, authorization, and error handling.
 
 ---
 
-## 📋 Requirements  
+## Technology Stack
 
-- **.NET 6.0 SDK** or later
-- MYSQL Wrokbench wil be used in part 2   
-- Visual Studio 2022 / VS Code  
-- Git (for version control)  
+* **Framework:** ASP.NET Core MVC (C#)
+* **Frontend:** Razor Views, Bootstrap 5
+* **Database:** SQLite (local), In-memory database for tests
+* **File Storage:** Encrypted file bytes stored in DB BLOBs
+* **Version Control:** Git + GitHub
 
 ---
 
+## Project Plan
 
+The project was developed in **phases**:
+
+1. **Phase 1 (Prototype)**
+
+   * Implemented basic lecturer functionality: create, view, edit claims.
+   * Coordinator and Manager dashboards with placeholder review/approval.
+   * Static storage (Lists) to simulate claim submissions.
+
+2. **Phase 2 (Enhancement)**
+
+   * Full database integration (SQLite).
+   * User authentication and session-based login.
+   * Attach/upload supporting claim documents with encryption.
+   * Implemented basic error handling and validation.
+
+3. **Phase 3 is yet to come 
+
+## Notes
+
+* Encryption keys are currently in code for testing; move them to **environment variables or Key Vault** for production.
+* Files use AES encryption, decrypted only when downloaded.
+* Unit tests ensure key functionality and error handling work reliably.
