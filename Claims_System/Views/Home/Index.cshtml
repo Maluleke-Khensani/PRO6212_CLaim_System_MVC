@@ -50,9 +50,10 @@
 <div class="container text-center py-5">
     <h5 class="fw-bold mb-3 text-dark">Get Started Today</h5>
     <p class="text-secondary mb-3">Log in to submit your claims or manage approvals seamlessly.</p>
-    <a asp-controller="Account" asp-action="Login" class="btn btn-dark btn-lg fw-bold">
+    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-dark btn-lg fw-bold">
         Login Now
     </a>
+
 </div>
 
 <style>

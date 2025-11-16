@@ -1,0 +1,50 @@
+﻿@model Claims_System.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h1>Edit User</h1>
+
+<form asp-action="EditUser" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Surname</label>
+        <input asp-for="Surname" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Employee Number</label>
+        <input asp-for="EmployeeNumber" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Hourly Rate</label>
+        <input asp-for="HourlyRate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+            @foreach (var role in ViewBag.Roles)
+            {
+                <option value="@role.Name" selected="@(role.Name == ViewBag.UserRole ? "selected" : null)">
+                    @role.Name
+                </option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="ListUsers" class="btn btn-secondary ms-2">Cancel</a>
+</form>

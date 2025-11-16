@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Claims_System.Controllers;
+﻿using Claims_System.Controllers;
 using Claims_System.Data;
 using Claims_System.Models;
 using Claims_System.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Claims_System_Tests.Controllers
 {
     public class LecturerControllerTests
     {
         // Helper to create a controller instance with mocked session and service
-        private LecturerController GetController(IClaimService service, ApplicationDbContext context)
+        private LecturerController GetController(IClaimService service, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            var controller = new LecturerController(service, context);
+            var controller = new LecturerController(service,userManager);
 
             // Set up fake HTTP context so we can simulate a session
             controller.ControllerContext = new ControllerContext

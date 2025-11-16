@@ -20,6 +20,27 @@ namespace Claims_System.Services
 
         public static async Task SeedAdminUser(UserManager<ApplicationUser> userManager)
         {
+
+            var hr = await userManager.FindByEmailAsync("hr@claims.com");
+            if (hr == null)
+            {
+                hr = new ApplicationUser
+                {
+                    UserName = "helen1000",
+                    Email = "hr@claims.com",
+                    FullName = "Helen Mali",
+                    EmployeeNumber = 1000, // pick a unique employee number for HR
+                };
+
+                // Create the user with a secure password
+                await userManager.CreateAsync(hr, "HR@1234");
+
+                // Assign HR role
+                await userManager.AddToRoleAsync(hr, "HR");
+            }
+
+
+
             // Admin account
             var adminUser = await userManager.FindByEmailAsync("admin@claims.com");
             if (adminUser == null)
@@ -80,6 +101,9 @@ namespace Claims_System.Services
                 await userManager.CreateAsync(manager, "Manager@123");
                 await userManager.AddToRoleAsync(manager, "Manager");
             }
+
+
+
         }
     }
 }
