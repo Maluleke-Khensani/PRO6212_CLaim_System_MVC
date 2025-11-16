@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Claims_System.Data;
 
 namespace Claims_System_Tests.Models
 {
@@ -12,13 +13,13 @@ namespace Claims_System_Tests.Models
     {
         // ✅ Helper method to create an in-memory SQLite DB
         // This simulates a real database without touching the actual DB
-        private ClaimsDbContext GetDbContext()
+        private ApplicationDbContext GetDbContext()
         {
-            var options = new DbContextOptionsBuilder<ClaimsDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseSqlite("Filename=:memory:") // in-memory SQLite
                 .Options;
 
-            var context = new ClaimsDbContext(options);
+            var context = new ApplicationDbContext(options);
             context.Database.OpenConnection();  // must open connection for SQLite memory
             context.Database.EnsureCreated();   // make sure the table is created
             return context;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Claims_System.Controllers;
+using Claims_System.Data;
 using Claims_System.Models;
 using Claims_System.Services;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace Claims_System_Tests.Controllers
     public class LecturerControllerTests
     {
         // Helper to create a controller instance with mocked session and service
-        private LecturerController GetController(IClaimService service, ClaimsDbContext context)
+        private LecturerController GetController(IClaimService service, ApplicationDbContext context)
         {
             var controller = new LecturerController(service, context);
 
@@ -38,10 +39,10 @@ namespace Claims_System_Tests.Controllers
         public async Task Index_Returns_View_With_UserClaims()
         {
             // Using in-memory database to avoid messing with real DB
-            var options = new DbContextOptionsBuilder<ClaimsDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase("LecturerControllerDB1")
                 .Options;
-            var context = new ClaimsDbContext(options);
+            var context = new ApplicationDbContext(options);
 
             // Sample claims: one for our user, one for someone else
             var claims = new List<LecturerClaim>
@@ -76,10 +77,10 @@ namespace Claims_System_Tests.Controllers
             var mockService = new Mock<IClaimService>();
 
             // In-memory DB so we can pass a context to controller
-            var options = new DbContextOptionsBuilder<ClaimsDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase("LecturerControllerDB2")
                 .Options;
-            var controller = GetController(mockService.Object, new ClaimsDbContext(options));
+            var controller = GetController(mockService.Object, new ApplicationDbContext(options));
 
             // Call ClaimForm action
             var result = controller.ClaimForm() as ViewResult;
@@ -102,10 +103,10 @@ namespace Claims_System_Tests.Controllers
                        .ReturnsAsync((LecturerClaim?)null);
 
             // In-memory DB
-            var options = new DbContextOptionsBuilder<ClaimsDbContext>()
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase("LecturerControllerDB3")
                 .Options;
-            var controller = GetController(mockService.Object, new ClaimsDbContext(options));
+            var controller = GetController(mockService.Object, new ApplicationDbContext(options));
 
            
             var result = await controller.ViewClaim(99);      // Call ViewClaim with an ID that doesn't exist
