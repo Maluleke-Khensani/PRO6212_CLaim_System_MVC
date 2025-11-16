@@ -1,21 +1,23 @@
-﻿using System.Text;
+﻿using Claims_System.Data;
 using Claims_System.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace Claims_System.Services
 {
     //Assited by ChatGPT to implement file encryption and decryption and process the documents
     public class ClaimService : IClaimService
     {
-        private readonly ClaimsDbContext _context;
-        private const string AesKey = "1234567890ABCDEF"; 
+        private const string AesKey = "1234567890ABCDEF";
 
-        public ClaimService(ClaimsDbContext context)
+        private readonly ApplicationDbContext _context;
+        public ClaimService(ApplicationDbContext context)
         {
             _context = context;
         }
+
 
         public async Task<IEnumerable<LecturerClaim>> GetAllClaimsAsync()
         {
@@ -177,16 +179,17 @@ namespace Claims_System.Services
         }
 
         // Coordinator
-        public async Task<bool> UpdateCoordinatorStatusAsync(int employeeNumber, string status)
+        public async Task<bool> UpdateCoordinatorStatusAsync(int claimId, string status)
         {
             var claim = await _context.LecturerClaims
-                                      .FirstOrDefaultAsync(c => c.EmployeeNumber == employeeNumber && c.CoordinatorStatus == "Pending");
+                                      .FirstOrDefaultAsync(c => c.ClaimId == claimId && c.ManagerStatus == "Pending");
             if (claim == null) return false;
 
-            claim.CoordinatorStatus = status;
+            claim.ManagerStatus = status;
             await _context.SaveChangesAsync();
             return true;
         }
+
 
         // Manager
         public async Task<IEnumerable<LecturerClaim>> GetPendingClaimsForManagerAsync()
@@ -198,16 +201,17 @@ namespace Claims_System.Services
         }
 
         // Manager
-        public async Task<bool> UpdateManagerStatusAsync(int employeeNumber, string status)
+        public async Task<bool> UpdateManagerStatusAsync(int claimId, string status)
         {
             var claim = await _context.LecturerClaims
-                                      .FirstOrDefaultAsync(c => c.EmployeeNumber == employeeNumber && c.ManagerStatus == "Pending");
+                                      .FirstOrDefaultAsync(c => c.ClaimId == claimId && c.ManagerStatus == "Pending");
             if (claim == null) return false;
 
             claim.ManagerStatus = status;
             await _context.SaveChangesAsync();
             return true;
         }
+
 
         public async Task<LecturerClaim?> GetClaimByEmployeeNumberAsync(int employeeNumber)
         {
