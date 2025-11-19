@@ -67,19 +67,29 @@ namespace Claims_System.Services
                         "Failed to create user: " +
                         string.Join("; ", createResult.Errors.Select(e => e.Description))
                     );
+<<<<<<< Updated upstream
+
+                // Assign role
+                await userManager.AddToRoleAsync(user, role);
+
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 
                 // Assign role
                 await userManager.AddToRoleAsync(user, role);
 
 <<<<<<< Updated upstream
 
-
-
             // Admin account
             var adminUser = await userManager.FindByEmailAsync("admin@claims.com");
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
+=======
+                // Create LecturerProfile ONLY for Lecturers
+                if (role == "Lecturer" && hourlyRate.HasValue)
+>>>>>>> Stashed changes
 =======
                 // Create LecturerProfile ONLY for Lecturers
                 if (role == "Lecturer" && hourlyRate.HasValue)
@@ -100,6 +110,7 @@ namespace Claims_System.Services
                 return user;
             }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             // Lecturer user
             var lecturer = await userManager.FindByEmailAsync("lecturer@claims.com");
@@ -147,6 +158,8 @@ namespace Claims_System.Services
             }
 
 =======
+=======
+>>>>>>> Stashed changes
             // SEED USERS HERE
             await CreateUserAsync("hr@claims.com", "Helen Mali", "Hr@1234", "HR");
 
@@ -154,6 +167,9 @@ namespace Claims_System.Services
             // await CreateUserAsync("lecturer@claims.com", "John Lecturer", "Lecturer@123", "Lecturer", 350);
             // await CreateUserAsync("coordinator@claims.com", "Jane Coordinator", "Coordinator@123", "Coordinator");
             // await CreateUserAsync("manager@claims.com", "Mark Manager", "Manager@123", "Manager");
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
     }
