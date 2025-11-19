@@ -68,10 +68,14 @@ namespace Claims_System.Services
                         string.Join("; ", createResult.Errors.Select(e => e.Description))
                     );
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 
                 // Assign role
                 await userManager.AddToRoleAsync(user, role);
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 =======
 >>>>>>> Stashed changes
@@ -86,6 +90,10 @@ namespace Claims_System.Services
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
+=======
+                // Create LecturerProfile ONLY for Lecturers
+                if (role == "Lecturer" && hourlyRate.HasValue)
+>>>>>>> Stashed changes
 =======
                 // Create LecturerProfile ONLY for Lecturers
                 if (role == "Lecturer" && hourlyRate.HasValue)
@@ -110,6 +118,7 @@ namespace Claims_System.Services
                 return user;
             }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
             // Lecturer user
@@ -160,6 +169,8 @@ namespace Claims_System.Services
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
             // SEED USERS HERE
             await CreateUserAsync("hr@claims.com", "Helen Mali", "Hr@1234", "HR");
 
@@ -168,6 +179,9 @@ namespace Claims_System.Services
             // await CreateUserAsync("coordinator@claims.com", "Jane Coordinator", "Coordinator@123", "Coordinator");
             // await CreateUserAsync("manager@claims.com", "Mark Manager", "Manager@123", "Manager");
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
