@@ -41,6 +41,8 @@ namespace Claims_System.Services
 
 
 
+
+
             // Admin account
             var adminUser = await userManager.FindByEmailAsync("admin@claims.com");
             if (adminUser == null)
@@ -101,8 +103,6 @@ namespace Claims_System.Services
                 await userManager.CreateAsync(manager, "Manager@123");
                 await userManager.AddToRoleAsync(manager, "Manager");
             }
-
-
 
         }
     }
