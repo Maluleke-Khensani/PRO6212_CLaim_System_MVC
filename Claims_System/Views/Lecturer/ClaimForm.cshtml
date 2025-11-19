@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Create Monthly Claim";
 }
+<a asp-controller="Lecturer" asp-action="Index" class="btn btn-secondary mb-3">
+    Back to Home
+</a>
 
 @if (TempData["Success"] != null)
 {
@@ -100,7 +103,8 @@
                         </td>
 
                         <td>
-                            <input type="text" value="@ViewBag.Rate" class="form-control" readonly id="rateInput" />
+                            <input type="hidden" asp-for="Rate" value="@ViewBag.Rate" />
+                            <input type="text" class="form-control" readonly id="rateInput" value="@ViewBag.Rate" />
                         </td>
 
                         <td>

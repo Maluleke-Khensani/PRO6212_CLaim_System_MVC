@@ -16,6 +16,10 @@ namespace Claims_System.Models
         public decimal HoursWorked { get; set; } // Max 180 hours per month
 
         [Required]
+        public decimal Rate { get; set; }
+
+
+        [Required]
         public string ModuleName { get; set; }   // Module they worked on
 
         public string Notes { get; set; }        // Optional notes

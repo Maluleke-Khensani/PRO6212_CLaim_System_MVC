@@ -40,8 +40,19 @@
                 <div class="card-body">
                     <h5 class="card-title">Approvals Overview</h5>
                     <p class="card-text">Quick access to pending claims for Programme Coordinators or Academic Managers.</p>
-                    <a class="btn btn-info btn-sm mb-2" asp-controller="Coordinator" asp-action="PendingClaimsCoordinator">Pending Coordinator Claims</a>
-                    <a class="btn btn-warning btn-sm" asp-controller="Manager" asp-action="PendingClaimsManager">Pending Manager Claims</a>
+                    <a class="btn btn-info btn-sm mb-2"
+                       asp-controller="Coordinator"
+                       asp-action="Index">
+                        View Coordinator Claims
+                    </a>
+
+                    <a class="btn btn-warning btn-sm"
+                       asp-controller="Manager"
+                       asp-action="Index">
+                        View Manager Claims
+                    </a>
+
+
                 </div>
             </div>
         </div>

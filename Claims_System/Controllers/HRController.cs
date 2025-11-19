@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Claims_System.Data;
+﻿using Claims_System.Areas.Identity.Data;
 using Claims_System.Models;
+using Claims_System.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,28 +13,36 @@ namespace Claims_System.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        public HRController(
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context)
+        public HRController(UserManager<ApplicationUser> userManager,
+                            RoleManager<IdentityRole> roleManager,
+                            ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
         }
 
-            public IActionResult Index()
+
+        public async Task<IActionResult> Dashboard()
         {
+            ViewBag.TotalUsers = await _context.Users.CountAsync();
+            ViewBag.PendingClaims = await _context.LecturerClaims
+                .Where(c => c.ManagerStatus == "Pending")
+                .CountAsync();
+
+            ViewBag.ApprovedClaims = await _context.LecturerClaims
+                .Where(c => c.ManagerStatus == "Approved" && c.CoordinatorStatus == "Approved")
+                .CountAsync();
+
+            ViewBag.RejectedClaims = await _context.LecturerClaims
+                .Where(c => c.ManagerStatus == "Rejected" || c.CoordinatorStatus == "Rejected")
+                .CountAsync();
+
             return View();
         }
 
-        public async Task<IActionResult> ListUsers()
-        {
-            var users = await _userManager.Users.ToListAsync();
-            return View(users);
-        }
 
-
+        // ================= CREATE USER =================
         public IActionResult CreateUser()
         {
             ViewBag.Roles = _roleManager.Roles.ToList();
@@ -43,7 +50,7 @@ namespace Claims_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(ApplicationUser model, string password, string role)
+        public async Task<IActionResult> CreateUser(ApplicationUser model, string password, string role, decimal? hourlyRate)
         {
             if (!ModelState.IsValid)
             {
@@ -55,86 +62,189 @@ namespace Claims_System.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FullName = model.FullName,
-                Surname = model.Surname,
-                EmployeeNumber = model.EmployeeNumber,
-                HourlyRate = model.HourlyRate
+                FullName = model.FullName
             };
 
             var result = await _userManager.CreateAsync(user, password);
-
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, role);
-                return RedirectToAction("ListUsers");
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+
+                ViewBag.Roles = _roleManager.Roles.ToList();
+                return View(model);
             }
 
-            foreach (var error in result.Errors)
+            await _userManager.AddToRoleAsync(user, role);
+
+            // ONLY lecturers get profiles
+            if (role == "Lecturer" && hourlyRate.HasValue)
             {
-                ModelState.AddModelError("", error.Description);
+                var profile = new LecturerProfile
+                {
+                    UserId = user.Id,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    HourlyRate = hourlyRate.Value
+                };
+
+                _context.LecturerProfiles.Add(profile);
+                await _context.SaveChangesAsync();
             }
 
-            ViewBag.Roles = _roleManager.Roles.ToList();
-            return View(model);
+            return RedirectToAction("ListUsers");
         }
 
+        // ================= LIST USERS =================
+        public async Task<IActionResult> ListUsers()
+        {
+            var users = await _userManager.Users.ToListAsync();
 
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles.FirstOrDefault() ?? "N/A";
+            }
+
+            ViewBag.UserRoles = userRoles;
+
+            return View(users);
+        }
+
+        // ================= EDIT USER =================
         public async Task<IActionResult> EditUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            ViewBag.Roles = _roleManager.Roles.ToList();
-            ViewBag.UserRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-            return View(user);
+            var profile = await _context.LecturerProfiles
+                                        .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                CurrentRole = role,
+                HourlyRate = profile?.HourlyRate ?? 0,
+                AllRoles = _roleManager.Roles.Select(r => r.Name).ToList()
+            };
+
+            return View(model);
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> EditUser(ApplicationUser model, string role)
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);
             if (user == null) return NotFound();
 
-            // update info
+            // Update user
             user.FullName = model.FullName;
-            user.Surname = model.Surname;
             user.Email = model.Email;
             user.UserName = model.Email;
-            user.EmployeeNumber = model.EmployeeNumber;
-            user.HourlyRate = model.HourlyRate;
 
             await _userManager.UpdateAsync(user);
 
-            // update role
-            var currentRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
-            if (currentRole != role)
-            {
-                if (currentRole != null)
-                    await _userManager.RemoveFromRoleAsync(user, currentRole);
+            // Handle role change
+            var oldRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-                await _userManager.AddToRoleAsync(user, role);
+            if (oldRole != model.NewRole)
+            {
+                if (oldRole != null)
+                    await _userManager.RemoveFromRoleAsync(user, oldRole);
+
+                await _userManager.AddToRoleAsync(user, model.NewRole);
             }
+
+            // Handle LecturerProfile
+            var profile = await _context.LecturerProfiles
+                                        .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
+            if (model.NewRole == "Lecturer")
+            {
+                if (profile == null)
+                {
+                    profile = new LecturerProfile
+                    {
+                        UserId = user.Id,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        HourlyRate = model.HourlyRate
+                    };
+
+                    _context.LecturerProfiles.Add(profile);
+                }
+                else
+                {
+                    profile.FullName = user.FullName;
+                    profile.Email = user.Email;
+                    profile.HourlyRate = model.HourlyRate;
+                }
+            }
+            else
+            {
+                if (profile != null)
+                    _context.LecturerProfiles.Remove(profile);
+            }
+
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("ListUsers");
         }
 
 
-        public async Task<IActionResult> DeleteUser(string id)
+        [HttpPost]
+        public async Task<IActionResult> DeleteUserConfirmed(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
+            // Remove lecturer profile if exists
+            var profile = await _context.LecturerProfiles
+                                        .FirstOrDefaultAsync(p => p.UserId == id);
+
+            if (profile != null)
+            {
+                _context.LecturerProfiles.Remove(profile);
+                await _context.SaveChangesAsync();
+            }
+
+            // Delete the user from Identity
             await _userManager.DeleteAsync(user);
+
             return RedirectToAction("ListUsers");
         }
-
+        // GET: List all lecturers
         public async Task<IActionResult> GenerateReport()
         {
-            var claims = await _context.LecturerClaims.ToListAsync();
-            return View(claims);
+            var lecturers = await _context.LecturerProfiles.ToListAsync();
+            return View(lecturers); // View displays "Generate PDF" buttons per lecturer
         }
+
+        // GET: Generate PDF for a lecturer
+        public async Task<IActionResult> GenerateReportForLecturer(string userId)
+        {
+            var lecturer = await _context.LecturerProfiles.FirstOrDefaultAsync(l => l.UserId == userId);
+            if (lecturer == null) return NotFound();
+
+            var claims = await _context.LecturerClaims
+                .Where(c => c.UserId == userId &&
+                            c.ManagerStatus == "Approved" &&
+                            c.CoordinatorStatus == "Approved")
+                .OrderBy(c => c.Year)
+                .ThenBy(c => c.Month)
+                .ToListAsync();
+
+            byte[] pdfBytes = PdfGeneratorHelper.CreateLecturerReport(lecturer, claims);
+
+            return File(pdfBytes, "application/pdf", $"{lecturer.FullName}-Report.pdf");
+        }
+
 
     }
 }

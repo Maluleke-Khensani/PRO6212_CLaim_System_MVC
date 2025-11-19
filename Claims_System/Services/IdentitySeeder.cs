@@ -1,10 +1,28 @@
-﻿using Claims_System.Models;
+﻿using Claims_System.Areas.Identity.Data;
+using Claims_System.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Claims_System.Services
 {
     public class IdentitySeeder
     {
+        private static ApplicationDbContext _context;
+
+        public static async Task SeedData(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext dbContext)
+        {
+            _context = dbContext;
+
+            await SeedRoles(roleManager);
+            await SeedUsers(userManager);
+        }
+
+        // =====================
+        //       ROLES
+        // =====================
         public static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
             string[] roles = { "Lecturer", "Coordinator", "Manager", "HR" };
@@ -12,34 +30,48 @@ namespace Claims_System.Services
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
-                {
                     await roleManager.CreateAsync(new IdentityRole(role));
-                }
             }
         }
 
-        public static async Task SeedAdminUser(UserManager<ApplicationUser> userManager)
+        // =====================
+        //       USERS
+        // =====================
+        private static async Task SeedUsers(UserManager<ApplicationUser> userManager)
         {
-
-            var hr = await userManager.FindByEmailAsync("hr@claims.com");
-            if (hr == null)
+            async Task<ApplicationUser> CreateUserAsync(
+                string email,
+                string fullName,
+                string password,
+                string role,
+                decimal? hourlyRate = null)
             {
-                hr = new ApplicationUser
+                // Check if exists
+                var existingUser = await userManager.FindByEmailAsync(email);
+                if (existingUser != null)
+                    return existingUser;
+
+                // Create the identity user
+                var user = new ApplicationUser
                 {
-                    UserName = "helen1000",
-                    Email = "hr@claims.com",
-                    FullName = "Helen Mali",
-                    EmployeeNumber = 1000, // pick a unique employee number for HR
+                    UserName = email,
+                    Email = email,
+                    FullName = fullName,
+                    EmailConfirmed = true
                 };
 
-                // Create the user with a secure password
-                await userManager.CreateAsync(hr, "HR@1234");
+                var createResult = await userManager.CreateAsync(user, password);
 
-                // Assign HR role
-                await userManager.AddToRoleAsync(hr, "HR");
-            }
+                if (!createResult.Succeeded)
+                    throw new Exception(
+                        "Failed to create user: " +
+                        string.Join("; ", createResult.Errors.Select(e => e.Description))
+                    );
 
+                // Assign role
+                await userManager.AddToRoleAsync(user, role);
 
+<<<<<<< Updated upstream
 
 
 
@@ -48,17 +80,27 @@ namespace Claims_System.Services
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
+=======
+                // Create LecturerProfile ONLY for Lecturers
+                if (role == "Lecturer" && hourlyRate.HasValue)
+>>>>>>> Stashed changes
                 {
-                    UserName = "admin@claims.com",
-                    Email = "admin@claims.com",
-                    FullName = "System Admin",
-                    EmployeeNumber = 9999
-                };
+                    var profile = new LecturerProfile
+                    {
+                        UserId = user.Id,     // ❤️ NEW: Identity UserId FK
+                        FullName = fullName,
+                        Email = email,
+                        HourlyRate = hourlyRate.Value
+                    };
 
-                await userManager.CreateAsync(adminUser, "Admin@123");
-                await userManager.AddToRoleAsync(adminUser, "Manager"); // Admin = Manager
+                    _context.LecturerProfiles.Add(profile);
+                    await _context.SaveChangesAsync();
+                }
+
+                return user;
             }
 
+<<<<<<< Updated upstream
             // Lecturer user
             var lecturer = await userManager.FindByEmailAsync("lecturer@claims.com");
             if (lecturer == null)
@@ -104,6 +146,15 @@ namespace Claims_System.Services
                 await userManager.AddToRoleAsync(manager, "Manager");
             }
 
+=======
+            // SEED USERS HERE
+            await CreateUserAsync("hr@claims.com", "Helen Mali", "Hr@1234", "HR");
+
+            // Uncomment when needed:
+            // await CreateUserAsync("lecturer@claims.com", "John Lecturer", "Lecturer@123", "Lecturer", 350);
+            // await CreateUserAsync("coordinator@claims.com", "Jane Coordinator", "Coordinator@123", "Coordinator");
+            // await CreateUserAsync("manager@claims.com", "Mark Manager", "Manager@123", "Manager");
+>>>>>>> Stashed changes
         }
     }
 }

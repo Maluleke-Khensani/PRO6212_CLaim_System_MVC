@@ -9,11 +9,11 @@ namespace Claims_System.Models
         [Key]
         public int ClaimId { get; set; }
 
-        [Required]
-        public int EmployeeNumber { get; set; }
 
         [Required]
         public string Username { get; set; }
+        public string UserId { get; set; }   // NEW — FK to ApplicationUser.Id
+
 
         [Required]
         public string FullName { get; set; }

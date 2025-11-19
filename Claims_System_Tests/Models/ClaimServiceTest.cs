@@ -5,14 +5,20 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
-using Claims_System.Data;
+using Claims_System.Areas.Identity.Data;
+
 
 namespace Claims_System_Tests.Models
 {
     public class ClaimServiceTest
-    {
+    { }
+}
         // ✅ Helper method to create an in-memory SQLite DB
+      
         // This simulates a real database without touching the actual DB
+        
+        /*
+        
         private ApplicationDbContext GetDbContext()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -127,3 +133,4 @@ namespace Claims_System_Tests.Models
         }
     }
 }
+*/

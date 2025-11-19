@@ -1,4 +1,5 @@
-﻿using Claims_System.Data;
+﻿
+using Claims_System.Areas.Identity.Data;
 using Claims_System.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,58 @@ namespace Claims_System.Services
             return await _context.LecturerClaims.AsNoTracking().ToListAsync();
         }
 
+
         public async Task<LecturerClaim?> GetClaimByIdAsync(int id)
         {
             return await _context.LecturerClaims
                 .FirstOrDefaultAsync(c => c.ClaimId == id);
+        }
+
+
+        // Manager
+        public async Task<IEnumerable<LecturerClaim>> GetPendingClaimsForManagerAsync()
+        {
+            return await _context.LecturerClaims
+                .OrderByDescending(c => c.Submitted)
+                .ToListAsync();
+        }
+
+        // Coordinator
+        public async Task<IEnumerable<LecturerClaim>> GetPendingClaimsForCoordinatorAsync()
+        {
+            return await _context.LecturerClaims
+                .OrderByDescending(c => c.Submitted)
+                .ToListAsync();
+        }
+
+
+        // Manager
+        public async Task<bool> UpdateManagerStatusAsync(int claimId, string status)
+        {
+            var claim = await GetClaimByIdAsync(claimId);
+            if (claim == null) return false;
+
+            claim.ManagerStatus = status;
+
+            if (status == "Rejected")
+                claim.CoordinatorStatus = "Rejected";
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // Coordinator
+        public async Task<bool> UpdateCoordinatorStatusAsync(int claimId, string status)
+        {
+            var claim = await GetClaimByIdAsync(claimId);
+            if (claim == null) return false;
+
+            if (claim.ManagerStatus != "Approved")
+                return false;
+
+            claim.CoordinatorStatus = status;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
 
@@ -169,55 +218,10 @@ namespace Claims_System.Services
             };
         }
 
-        // Coordinator
-        public async Task<IEnumerable<LecturerClaim>> GetPendingClaimsForCoordinatorAsync()
-        {
-            return await _context.LecturerClaims
-                                 .Where(c => c.CoordinatorStatus == "Pending")
-                                 .OrderByDescending(c => c.Submitted)
-                                 .ToListAsync();
-        }
-
-        // Coordinator
-        public async Task<bool> UpdateCoordinatorStatusAsync(int claimId, string status)
-        {
-            var claim = await _context.LecturerClaims
-                                      .FirstOrDefaultAsync(c => c.ClaimId == claimId && c.ManagerStatus == "Pending");
-            if (claim == null) return false;
-
-            claim.ManagerStatus = status;
-            await _context.SaveChangesAsync();
-            return true;
-        }
+       
 
 
-        // Manager
-        public async Task<IEnumerable<LecturerClaim>> GetPendingClaimsForManagerAsync()
-        {
-            return await _context.LecturerClaims
-                                 .Where(c => c.ManagerStatus == "Pending")
-                                 .OrderByDescending(c => c.Submitted)
-                                 .ToListAsync();
-        }
 
-        // Manager
-        public async Task<bool> UpdateManagerStatusAsync(int claimId, string status)
-        {
-            var claim = await _context.LecturerClaims
-                                      .FirstOrDefaultAsync(c => c.ClaimId == claimId && c.ManagerStatus == "Pending");
-            if (claim == null) return false;
-
-            claim.ManagerStatus = status;
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-
-        public async Task<LecturerClaim?> GetClaimByEmployeeNumberAsync(int employeeNumber)
-        {
-            return await _context.LecturerClaims
-                                 .FirstOrDefaultAsync(c => c.EmployeeNumber == employeeNumber);
-        }
-
+       
     }
 }

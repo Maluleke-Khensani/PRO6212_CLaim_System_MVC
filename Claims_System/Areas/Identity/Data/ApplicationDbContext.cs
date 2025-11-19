@@ -1,30 +1,42 @@
 ﻿using Claims_System.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Claims_System.Data;
-
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+namespace Claims_System.Areas.Identity.Data
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-    }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options) { }
 
-    public DbSet<LecturerClaim> LecturerClaims { get; set; }
+        public DbSet<LecturerClaim> LecturerClaims { get; set; }
+        public DbSet<LecturerProfile> LecturerProfiles { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        builder.Entity<LecturerClaim>()
-        .Property(c => c.HoursWorked)
-        .HasPrecision(18, 2); // 18 digits, 2 decimal places
+            // 1-to-1 ApplicationUser → LecturerProfile
+            builder.Entity<LecturerProfile>()
+                .HasKey(lp => lp.UserId);
 
-    builder.Entity<LecturerClaim>()
-        .Property(c => c.Rate)
-        .HasPrecision(18, 2);
+            builder.Entity<ApplicationUser>()
+                .HasOne(u => u.LecturerProfile)
+                .WithOne(lp => lp.User)
+                .HasForeignKey<LecturerProfile>(lp => lp.UserId);
 
-    base.OnModelCreating(builder);
+            // Money precision
+            builder.Entity<LecturerProfile>()
+                .Property(p => p.HourlyRate)
+                .HasPrecision(18, 2);
+
+            builder.Entity<LecturerClaim>()
+                .Property(c => c.HoursWorked)
+                .HasPrecision(18, 2);
+
+            builder.Entity<LecturerClaim>()
+                .Property(c => c.Rate)
+                .HasPrecision(18, 2);
+        }
     }
 }

@@ -1,7 +1,8 @@
-using System.Diagnostics;
+using Claims_System.Areas.Identity.Data;
 using Claims_System.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Claims_System.Data;
+using System.Diagnostics;
 
 namespace Claims_System.Controllers
 {
@@ -27,20 +28,30 @@ namespace Claims_System.Controllers
         }
 
         // Example dashboard actions — replace or remove names to match your Views/Home/*.cshtml
+
+        [Authorize(Roles = "Lecturer,HR")]
+
         public IActionResult LecturerDashboard()
         {
             var claims = _context.LecturerClaims.ToList();
             return View("LecturerDashboard", claims);
         }
 
+        [Authorize(Roles = "Coordinator,HR")]
         public IActionResult CoordinatorDashboard()
         {
             return View("CoordinatorDashboard");
         }
 
+        [Authorize(Roles = "Manager,HR")]
         public IActionResult ManagerDashboard()
         {
             return View("ManagerDashboard");
+        }
+
+        public IActionResult HRDashboard()
+        {
+            return View("HRDashboard");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

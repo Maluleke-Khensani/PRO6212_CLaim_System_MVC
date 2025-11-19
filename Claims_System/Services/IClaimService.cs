@@ -21,7 +21,6 @@ namespace Claims_System.Services
         // Manager
         Task<IEnumerable<LecturerClaim>> GetPendingClaimsForManagerAsync();
         Task<bool> UpdateManagerStatusAsync(int claimId, string status);
-        Task<LecturerClaim?> GetClaimByEmployeeNumberAsync(int employeeNumber);
 
         byte[] DecryptFileForPreview(byte[] encryptedBytes);
         FileResult? DownloadDocument1(int claimId);

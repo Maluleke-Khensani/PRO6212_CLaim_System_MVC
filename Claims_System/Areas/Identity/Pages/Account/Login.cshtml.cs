@@ -104,65 +104,41 @@ namespace Claims_System.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            if (!ModelState.IsValid)
+                return Page();
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            if (ModelState.IsValid)
+            var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+            if (user == null)
             {
-                // Attempt to sign in the user
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-
-                    // Get the full user object
-                    var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
-                    var roles = await _signInManager.UserManager.GetRolesAsync(user);
-
-                    // Redirect based on role
-                    if (roles.Contains("Lecturer"))
-                    {
-                        return LocalRedirect(Url.Content("~/Home/LecturerDashboard"));
-                    }
-                    else if (roles.Contains("Coordinator"))
-                    {
-                        return LocalRedirect(Url.Content("~/Home/CoordinatorDashboard"));
-                    }
-                    else if (roles.Contains("Manager"))
-                    {
-                        return LocalRedirect(Url.Content("~/Home/ManagerDashboard"));
-                    }
-                    else if (roles.Contains("HR"))
-                    {
-                        return LocalRedirect(Url.Content("~/Home/HRDashboard"));
-                    }
-                    else
-                    {
-                        // fallback to home if no role matches
-                        return LocalRedirect("~/");
-                    }
-                }
-
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-
-                // Invalid login attempt
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return Page();
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, lockoutOnFailure: false);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return Page();
+            }
+
+            // ⚡ Sign in the user
+            await _signInManager.SignInAsync(user, Input.RememberMe);
+
+            // Get user roles
+            var roles = await _signInManager.UserManager.GetRolesAsync(user);
+
+            // Redirect based on roles (HR has priority if multiple roles)
+            if (roles.Contains("HR"))
+                return RedirectToAction("HRDashboard", "Home");
+            if (roles.Contains("Coordinator"))
+                return RedirectToAction("Index", "Coordinator");
+            if (roles.Contains("Manager"))
+                return RedirectToAction("Index", "Manager");
+            if (roles.Contains("Lecturer"))
+                return RedirectToAction("Index", "Home");
+
+            // fallback
+            return RedirectToAction("Index", "Home");
         }
 
     }
